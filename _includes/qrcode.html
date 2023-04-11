@@ -1,0 +1,64 @@
+  <style>
+    #qrCode {
+      width: 300px;
+      height: 300px;
+    }
+  </style>
+
+  <div>
+    <label for="urlInput">URL:</label>
+    <input type="text" id="urlInput" placeholder="Enter a URL">
+  </div>
+  <button id="generateButton">Generate QR Code</button>
+  <div>
+    <label for="colorPicker">Color:</label>
+    <input type="text" id="colorPicker" readonly>
+  </div>
+  <div id="qrCode"></div>
+  <button id="downloadPng">Download as PNG</button>
+  <button id="downloadSvg">Download as SVG</button>
+
+  <script>
+    const urlInput = document.getElementById('urlInput');
+    const generateButton = document.getElementById('generateButton');
+    const colorPicker = document.getElementById('colorPicker');
+    const qrCode = document.getElementById('qrCode');
+    const downloadPng = document.getElementById('downloadPng');
+    const downloadSvg = document.getElementById('downloadSvg');
+
+    let qrColor = '#000000';
+    const picker = new Picker({ parent: colorPicker });
+    picker.onChange = (color) => {
+      qrColor = color.rgbaString;
+    };
+
+    generateButton.addEventListener('click', () => {
+      qrCode.innerHTML = '';
+      QRCode.toCanvas(qrCode, urlInput.value, { scale: 10, color: { dark: qrColor } }, (error) => {
+        if (error) console.error(error);
+      });
+    });
+
+    downloadPng.addEventListener('click', () => {
+      const canvas = qrCode.querySelector('canvas');
+      if (canvas) {
+        const link = document.createElement('a');
+        link.download = 'qr-code.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      }
+    });
+
+    downloadSvg.addEventListener('click', () => {
+      QRCode.toString(urlInput.value, { type: 'svg', color: { dark: qrColor } }, (error, svg) => {
+        if (error) console.error(error);
+        const blob = new Blob([svg], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'qr-code.svg';
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+    });
+  </script>
