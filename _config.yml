@@ -9,7 +9,8 @@
 # --- Required options --- #
 ############################
 
-url: https://qrmatey.github.io
+url: "http://qrmatey.github.io"
+baseurl: ""
 
 
 # Name of website
