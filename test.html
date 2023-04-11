@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator</title>
+  <style>
+    #qrCode {
+      width: 300px;
+      height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <label for="urlInput">URL:</label>
+    <input type="text" id="urlInput" placeholder="Enter a URL">
+  </div>
+  <button id="generateButton">Generate QR Code</button>
+  <div>
+    <label for="colorPicker">Color:</label>
+    <input type="text" id="colorPicker" readonly>
+  </div>
+  <canvas id="qrCode"></canvas>
+  <button id="downloadPng">Download as PNG</button>
+  <button id="downloadSvg">Download as SVG</button>
+
+  <script>
+    const urlInput = document.getElementById('urlInput');
+    const generateButton = document.getElementById('generateButton');
+    const colorPicker = document.getElementById('colorPicker');
+    const qrCode = document.getElementById('qrCode');
+    const downloadPng = document.getElementById('downloadPng');
+    const downloadSvg = document.getElementById('downloadSvg');
+
+    let qrColor = '#000000';
+    const picker = new Picker({ parent: colorPicker, color: qrColor });
+    picker.onChange = (color) => {
+      qrColor = color.hexString;
+    };
+
+    const qr = new QRious({
+      element: qrCode,
+      size: 300,
+      value: '',
+      background: 'transparent',
+      foreground: qrColor
+    });
+
+    generateButton.addEventListener('click', () => {
+      qr.value = urlInput.value;
+      qr.foreground = qrColor;
+    });
+
+    downloadPng.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'qr-code.png';
+      link.href = qr.toDataURL();
+      link.click();
+    });
+
+    // Note that QRious does not support SVG output, so the SVG download button will not work.
+    downloadSvg.style.display = 'none';
+  </script>
+</body>
+</html>
